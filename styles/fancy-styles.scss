@@ -1,0 +1,406 @@
+@import './fancy-variables';
+@import './mixins';
+
+
+.fancy-field, .fancy-button  {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 30px auto;
+  p { margin: 0; }
+}
+
+.fancy-field.disabled {
+  .magic-label, input {
+    color: $disabled-color !important;
+  }
+}
+
+.fancy-button.disabled {
+  p { 
+    color: $disabled-color !important; 
+  }
+}
+
+
+// ====================
+// ======= Field ======
+// ====================
+
+.fancy-field {
+  line-height: 1.3;
+  max-width: 100%;
+  width: $fancy-width;
+
+  .wrap { 
+    position: relative; 
+    width: 100%;
+  }
+  &.disabled .wrap { 
+    pointer-events: auto; 
+  }
+
+  @include placeholder {
+    @include simple-transition(0.3s); 
+    opacity: 1;
+    color: $color-3;
+  }
+  
+  input {
+    @include simple-transition(0.2s);
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+    font-family: inherit; 
+    font-size: 100%; 
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+
+    padding: 8px 5px;
+    background: $color-0;
+    border: 1px solid $color-1;
+    border-radius: 2px;
+    font-size: 14px;
+    color: $color-3;
+
+    @include placeholder-on-focus { opacity: 0 }
+    
+    &:focus, &:active {
+      outline: 0;
+      border: 1px solid $color-1;
+    }
+    &:disabled {
+      color: $color-1;
+    }
+  }
+
+  .magic-label {
+    @include simple-transition(0.3s);
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+    padding: 0 2px;
+    
+    top: 0px;
+    left: 8px;
+    color: $color-3;
+    font-size: 10px;
+    font-weight: 600;
+
+    @include linear-gradient-webkits(bottom, $color-0, 8px, transparent, 1px);
+    background-image: linear-gradient(to top, $color-0 8px, transparent 1px);
+
+    &.populated {
+      opacity: 1;
+      top: $magic-label-top;
+    }
+    &.focused {
+      opacity: 1;
+      color: $fancy-color;
+      top: $magic-label-top;
+    }
+  }
+
+  .unit {
+    @include simple-transition(0.3s);
+    position: absolute;
+    pointer-events: none;
+    margin: 0;
+    opacity: 0;
+
+    color: $color-2;
+    font-size: 14px;
+    left: 50px;
+    top: 9px;
+    &.shown { opacity: 1; }
+  }
+
+  &.error {
+    input { 
+      border: 1px solid $error-color; 
+    }
+    .magic-label, .magic-label.populated { 
+      color: $error-color; 
+    }
+  }
+}
+.persist .fancy-field { 
+  @include placeholder { color: $color-4; }
+}
+
+
+
+// ====================
+// ====== Toggle ======
+// ====================
+
+$toggle-width: 30px;
+$toggle-height: ($toggle-width / 2) + 2;
+
+label#toggle {
+  position: relative;
+  display: block;
+  text-align: left;
+  height: $toggle-height + 2;
+  width: $fancy-width;
+
+  font-size: 14px;
+
+  p {
+    margin: 0;
+    display: inline-block;
+    line-height: $toggle-height + 2;
+    
+    padding-left: $toggle-width + 10;
+    color: $color-4;
+  }
+
+  input[type="checkbox"] {
+    display: none;
+
+    &:checked + .toggle {
+      border: 1px solid $fancy-color;
+      .toggle-background {
+        width: $toggle-width;
+      }
+      .toggle-toggler {
+        border-color: $fancy-color;
+        left: ($toggle-width / 2) - 3;
+        top: -1px;
+      }
+    }
+    &:disabled + .toggle {
+      opacity: 0.5;
+    }
+  }
+
+  .toggle {
+    display: inline-block;
+    overflow: hidden !important;
+    position: absolute;
+    left: 0;
+
+    width: $toggle-width;
+    height: $toggle-height;
+    border-radius: $toggle-height;
+    border: 1px solid $color-2;
+
+    &-background {
+      @include simple-transition(0.1s);
+      display: block;
+      position: absolute;
+      left: -1px;
+      top: 0px;
+
+      width: 0px;
+      height: $toggle-height;
+      background-color: $fancy-color;
+      border-radius: $toggle-height;
+    }
+
+    &-toggler {
+      @include simple-transition(0.1s);
+      display: block;
+      position: relative;
+      top: -1px;
+      left: -1px;
+
+      width: $toggle-height;
+      height: $toggle-height;
+      border-radius: $toggle-height;
+      border: 1px solid $color-2;
+      background-color: #ffffff;
+    }
+  }
+}
+
+// ====================
+// ====== Switch ======
+// ====================
+
+$switch-height: 30px;
+label#switch {
+  display: block;
+  width: $fancy-width;
+  height: $switch-height;
+  line-height: $switch-height;
+  
+  p {
+    display: inline-block;
+    font-size: 14px;
+    color: $color-4;
+    padding-right: 10px;
+  }
+
+  .switch {
+    display: inline-block;
+    text-align: center;
+    width: 140px;
+    height: $switch-height;
+
+    &-option {
+      display: inline-block;
+      vertical-align: top;
+      width: 46%;
+      height: $switch-height;
+      cursor: pointer;
+
+      font-size: 11px;
+      text-transform: uppercase;
+      background: $color-0;
+      border: 1px solid $color-2;
+      color: $color-2;
+      
+      &.true {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-right: none;
+      }
+      &.false {
+        background: $fancy-color;
+        border: 1px solid $fancy-color;
+        color: $color-0;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+      }
+    }
+  }
+
+  input[type="checkbox"] {
+    display: none;
+
+    &:checked + .switch {
+      .switch-option.true {
+        background: $fancy-color;
+        border: 1px solid $fancy-color;
+        color: $color-0;
+      }
+      .switch-option.false {
+        background: $color-0;
+        border: 1px solid $color-2;
+        border-left: none;
+        color: $color-2;
+      }
+    }
+    &:disabled + .switch {
+      opacity: 0.5;
+    }
+  }
+}
+
+
+// ======================
+// ====== Checkbox ======
+// ======================
+
+$checkbox-height: 13px;
+
+label#checkbox {
+  display: block;
+  position: relative;
+  font-size: 14px;
+  width: $fancy-width;
+
+  p {
+    color: $color-4;
+    margin: 0;
+    padding-left: 24px;
+  }
+
+  input {
+    -webkit-appearance: none;
+    position: absolute;
+    
+    top: 2px;
+    left: 0;
+    height: $checkbox-height;
+    width: $checkbox-height;
+    margin: 0 auto 10px;
+    outline: 0;
+
+    border: 1px solid $color-1;
+    background: $color-0;
+    padding: 5px;
+    font-size: 14px;
+
+    &:checked {
+      background-image: url($checkmark-image-url);
+      background-size: $checkbox-height - 3;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+
+  &.checkbox-right {
+    input {
+      left: auto;
+      right: 0;
+    }
+    p {
+      padding: 0;
+    }
+  }
+}
+
+
+// =========================
+//    Messages and carats
+// =========================
+
+.message-container {
+  @include simple-transition(0.3s);
+  display: inline-block;
+  position: absolute;
+  z-index: 4;
+  opacity: 0;
+  margin-top: 10px;
+
+  &.shown {
+   opacity: 1; 
+  }
+
+  .message { 
+    font-size: 12px;
+    font-weight: 300;
+    border-radius: 2px;
+    
+    width: auto;
+    height: auto;
+    padding: 5px;
+  }
+
+  .carat {
+    left: 14px;
+    top: 0;
+  }
+}
+
+.error-message {
+  .message {
+    color: $color-0;
+    background-color: $error-color;
+    border: 1px solid $error-color;
+  }
+  .carat {
+    @include small-carat($error-color);
+  }
+}
+
+.disabled-text, .focus-text {
+  opacity: 0;
+  .message {
+    color: $color-4;
+    border: 1px solid $color-1;
+    background: $color-0;
+  }
+  .carat { 
+    display: block;
+    @include small-carat($color-0, $color-1); 
+    top: 1px;
+  }
+}
+
+

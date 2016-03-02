@@ -1,0 +1,69 @@
+// =====================
+// = Style customizing =
+// =====================
+
+// Neutrals. Left changable so brands can follow color guidelines.
+$color-0: white;
+$color-1: #c8c9cb;
+$color-2: #b3b4b6;
+$color-3: #727375;
+$color-4: #323335;
+$disabled-color: #E5E5E5;
+
+// The important colors.
+$fancy-color: #00c7e5;
+$error-color: #ee4445;
+
+// Default width of all items.
+$fancy-width: 260px;
+
+// Defaults to a checkmark asset in #00c7e5.
+$checkmark-image-url: '//dx4ncraaox0l3.cloudfront.net/webapp/blue-check-sharp.png';
+
+// Default width of all items.
+$fancy-width: 260px;
+
+// Sets the top of a revealed magic label.
+$magic-label-top: -10px;
+
+
+
+// Other styles you may want to adjust.
+// To alter a specific fancy field, use its property name as the class selector.
+
+.fancy-field {
+	// margin? (default: 20px auto)
+
+	input {
+		// padding? (default: 8px 5px)
+		// border-radius? (default: 2px)
+	}
+
+	.magic-label {
+	  &.populated, &.focused {
+	  }
+	}
+
+	&.disabled {
+		input, .magic-label {
+		}
+	}
+
+	.unit {
+	  // set left value based on input length. 
+	  // to prevent overlap, I recommend adding right padding to the input field or setting a maxLength prop.
+	  // set top value as needed to center the unit (default: 9px)
+	}
+
+	// uncomment to position messages above the fields instead of below.
+	.message-container {
+	//   margin: 0 0 10px 0;
+	//   bottom: 100%;
+	//   .carat {
+	//     left: 50%;
+	//     top: auto;
+	//     bottom: 1px;
+	//     @include rotate(180deg);
+	//   }
+	}
+}

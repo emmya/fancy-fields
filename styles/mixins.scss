@@ -1,0 +1,46 @@
+@mixin placeholder {
+  ::-webkit-input-placeholder {@content}
+  :-moz-placeholder           {@content}
+  ::-moz-placeholder          {@content}
+  :-ms-input-placeholder      {@content}
+}
+
+@mixin placeholder-on-focus {
+  &:focus::-webkit-input-placeholder {@content}
+  &:focus:-moz-placeholder           {@content}  
+  &:focus::-moz-placeholder          {@content}  
+  &:focus:-ms-input-placeholder      {@content}  
+}
+
+@mixin simple-transition($duration) {
+  -webkit-transition: all $duration ease-in-out;
+  -moz-transition: all $duration ease-in-out;
+  -ms-transition: all $duration ease-in-out;
+  -o-transition: all $duration ease-in-out;
+  transition: all $duration ease-in-out;
+}
+
+@mixin small-carat($color, $border: transparent) {
+  position: absolute;
+  background: $color;
+  &:after, &:before { bottom: 100%; left: 50%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; }
+  &:after { border-color: rgba(255, 255, 255, 0); border-bottom-color: $color; border-width: 10px; margin-left: -10px; }
+  &:before { border-color: transparent; border-bottom-color: $border; border-width: 11px; margin-left: -11px; }
+}
+
+
+@mixin linear-gradient-webkits($direction, $color, $pcnt1, $color2, $pcnt2) {
+  background-image: -webkit-linear-gradient($direction, $color $pcnt1, $color2 $pcnt2);
+  background-image:    -moz-linear-gradient($direction, $color $pcnt1, $color2 $pcnt2);
+  background-image:      -o-linear-gradient($direction, $color $pcnt1, $color2 $pcnt2);
+  // add standard syntax afterwards, eg: linear-gradient(to top, color pcnt, color pcnt);
+}
+
+@mixin rotate($degrees) {
+  -webkit-transform: rotate($degrees);
+  -moz-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  transform: rotate($degrees);
+  transform-origin: center center;
+}
