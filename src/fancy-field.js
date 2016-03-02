@@ -112,7 +112,7 @@ var FancyMessage = React.createClass({
 
     if (!messages || !messages.length) { return null; }
 
-    if (!messages.endsWith(".")) {
+    if (!messages.slice(-1).match(/\!|\.|\?/)) {
       messages += ".";
     }
 
