@@ -3,6 +3,8 @@
 
 #### Fancy React.js form components for all your fancy needs
 
+Customizable inputs with animated float labels, toggles, switches, and checkboxes for React.js.
+
 ![image](https://raw.githubusercontent.com/emmya/fancy-fields/master/src/images/fancyexample2.gif)
 
 
