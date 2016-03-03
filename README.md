@@ -1,5 +1,5 @@
 
-# Fancy Form
+# Fancy Fields
 
 #### Fancy React.js form components for all your fancy needs
 
@@ -23,7 +23,9 @@ You need **fancy-styles.scss**, which requires **mixins.scss** and **fancy-varia
 
 #####The bizness
 
-Fancy field and the fancy buttons assume that a parent component is tracking the form state (or passing it to the stores, or wherever else - I don't know, you're fancy). 
+Dependencies are react, underscore, and classnames.
+
+Fancy field and the fancy buttons assume that a parent component is tracking the form state (or passing it to the stores, or wherever else - I don't know, you're fancy).
 
 Simply pass a function as an updateChange prop. When updated, the fancy item will pass an object with its value, property, and hasChanged. 
 
