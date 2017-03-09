@@ -1,30 +1,30 @@
-var React = require('react');
-var FancyField = require('./fancy-field');
-var FancyButton = require('./fancy-button');
+import _ from 'underscore';
+import React, { Component, PropTypes } from 'react';
+import FancyField from './fancy-field';
+import FancyButton from './fancy-button';
 
-var ExampleFancyForm = React.createClass({
+class ExampleFancyForm extends Component {
+  constructor(props) {
+    super(props);
+    this.getChange = this.getChange.bind(this);
 
-	getInitialState: function() {
-		return { 
-      name: 'Frank',
+    this.state = {
+      name: 'Nrlr',
       size: '1098',
       color: this.props.color == 'blue',
       animals: null,
       like_dogs: true,
       yes: 'yes'
     }
-	},
+  }
 
-  updateFormState: function(field) {
-    var obj = {};
-    obj[field.property] = field.value;
-    this.setState(obj);
-  },
+  getChange(ff) {
+    this.setState(_.object([ff.property], [ff.value]));
+  }
 
-
-  render: function() {
-
-  	var nameErr = this.state.name && this.state.name.length ? null : "Who are you?!";
+  render() {
+    const { name, size, cereal, animals, color, like_dogs, yes } = this.state;
+  	const nameErr = name && name.length ? null : ["Who are you?!", "I am scared."];
 
   	return (
   		<form className='example-wrap'>
@@ -32,60 +32,57 @@ var ExampleFancyForm = React.createClass({
 		  	<FancyField 
           label='First name' 
           property='name'
-          value={ this.state.name }
-          updateChange={ this.updateFormState } 
-          errors={ nameErr }/>
+          value={ name }
+          handleChange={ this.getChange } 
+          errors={ nameErr }
+          initFocus={ true } />
 
         <FancyField 
-          label='Size' 
           property='size'
-          value={ this.state.size }
-          updateChange={ this.updateFormState } 
+          value={ size }
+          handleChange={ this.getChange } 
           disabled={ true } 
           disabledClickText='This is disabled on Wednesdays. No touchy.' />
 
         <FancyField 
           label='Favorite Cereal' 
           property='cereal'
-          value={ this.state.cereal }
-          updateChange={ this.updateFormState } />
+          value={ cereal }
+          handleChange={ this.getChange } />
 
         <FancyField 
-          label='Animals' 
           property='animals'
-          value={ this.state.animals }
-          updateChange={ this.updateFormState }
+          value={ animals }
+          handleChange={ this.getChange }
           unit='animals per barn' 
           focusText='Enter the number of animals per barn.' 
           maxLength='5' />
 
         <FancyButton 
-          label='Color' 
           property='color'
-          value={ this.state.color }
+          value={ color }
           switch={ true }
-          trueLabel='Blue'
-          falseLabel='Red'
-          updateChange={ this.updateFormState } />
+          labelOne='Blue'
+          labelTwo='Red'
+          handleChange={ this.getChange } />
 
         <FancyButton
             label='I like dogs'
-            value={ this.state.like_dogs }
+            value={ like_dogs }
             property='like_dogs'
-            updateChange={ this.updateFormState }
+            handleChange={ this.getChange }
             checkbox={ true } />
 
         <FancyButton
             label='Send me cookies'
-            value={ this.state.yes && this.state.like_dogs }
-            disabled={ !this.state.like_dogs }
+            value={ yes && like_dogs }
+            disabled={ !like_dogs }
             property='yes'
-            updateChange={ this.updateFormState }
+            handleChange={ this.getChange }
             toggle={ true } />
 	  	</form>
 	  )
   }
-});
+}
 
-
-module.exports = ExampleFancyForm;
+export default ExampleFancyForm;

@@ -1,131 +1,174 @@
-var _ = require('underscore');
-var React = require('react');
-var classNames = require('classNames');
+import _ from 'underscore';
+import React, { Component, PropTypes } from 'react';
+import cns from 'classnames';
 
+class FancyField extends Component {
+  constructor(props) {
+    super(props);
 
-var FancyField = React.createClass({ 
+    this.showLabel = this.showLabel.bind(this);
+    this.hideLabel = this.hideLabel.bind(this);
+    this.onFancyChange = this.onFancyChange.bind(this);
+    this.getNewState = this.getNewState.bind(this);
+    this.showDisabledText = this.showDisabledText.bind(this);
+    this.renderUnitComponent = this.renderUnitComponent.bind(this);
 
-  getInitialState: function() {
-    var shouldFocus = this.props.initFocus || false;
-    return ({ 
-      focused: shouldFocus,
-      isChanged: false
-    });
-  },
-
-  componentDidMount: function() {
-    if (this.state.focused) {
-      this.refs.input.getDOMNode().focus();
+    this.state = {
+      isFocused: props.initFocus,
+      isChanged: false,
+      showingDisabledText: false
     }
-  },
+  }
 
-  componentWillReceiveProps: function(props) {
+  componentDidMount() {
+    if (this.state.isFocused) {
+      this.fancyInput.focus();
+    }
+  }
+
+  componentWillReceiveProps(props) {
     if (props.value == this.props.initialValue) {
       this.setState({ isChanged: false });
     }
-  },
+  }
 
-  showLabel: function() {
-    this.setState({ focused: true });
-  },
+  render() {
+    const { showingDisabledText, isFocused } = this.state;
+    const { disabled, disabledClickText, errors, focusText, initFocus, 
+            label, persistLabel, placeholder, property, type, unit, 
+            value, ...other } = this.props;
 
-  hideLabel: function() {
-    this.setState({ focused: false });
-  },
+    const fanciness = cns('fancy-field', property, {
+                         'error': errors, 
+                         'populated': value,
+                         'disabled': disabled,
+                         'focused': isFocused });
 
-  showDisabledText: function() {
-    if (!this.props.disabledClickText || !this.props.disabled) { return; }
-    this.setState({ disabledText: true });
-    setTimeout(function() {
-      this.setState({ disabledText: false });
-    }.bind(this), 2100);
-  },
+    const peekaboo = cns('magic-label', {
+                        'populated': value || persistLabel, 
+                        'focused': isFocused });
 
-  updateChange: function(e) {
-    var newState = this.newState(e.target.value);
-    if (this.props.updateChange) {
-      this.props.updateChange(newState);
-    }
-  },
-
-  newState: function(newVal) {
-    var isChanged = newVal != this.props.initialValue;
-    var shouldUpdateChangeState = this.state.isChanged ? !isChanged : isChanged;
-    this.setState({ isChanged: isChanged });
-
-    return {
-      value: newVal,
-      property: this.props.property,
-      hasChanged: (shouldUpdateChangeState ? isChanged : null)
-    };
-  },
-
-  render: function() {
-    var {value, persistLabel, placeholder, property, label, type, disabled, initFocus, errors, ...other} = this.props;
-
-    var fanciness = classNames('fancy-field', property, {'error': errors, 'disabled': disabled });
-    var peekaboo = classNames('magic-label', {'populated' : value || persistLabel, 'focused' : this.state.focused });
-
-    var placeholder = placeholder || label;
-    var type = type || 'text';
-
-    var unit = this.props.unit ? <p className={ classNames('unit', {'shown': value || this.state.focused }) }>{ this.props.unit }</p> : null;
+    const backupName = property ? (property[0].toUpperCase() + property.slice(1)) : null;
     
     return (
       <div className={ fanciness }>
         <div className='wrap' onClick={ this.showDisabledText } >
 
-          <p className={ peekaboo }>{ label }</p>
+          <p className={ peekaboo }>{ label || backupName }</p>
 
           <input 
-            type={ type }
+            type={ type || 'text' }
+            value={ value } 
+            placeholder={ placeholder || label || backupName }
+            disabled={ disabled }
+            id={ property }
             onFocus={ this.showLabel } 
             onBlur ={ this.hideLabel } 
-            onChange={ this.updateChange }
-            ref='input' 
-            value={ value } 
-            placeholder={ placeholder }  
-            disabled={ disabled } 
-            id={ property }
+            onChange={ this.onFancyChange }
+            ref={(input) => { this.fancyInput = input }}
             { ...other } />
 
-            { unit }
-            <FancyMessage class='focus-text' message={ this.props.focusText } shown={ this.state.focused } />
-            <FancyMessage class='disabled-text' message={ this.props.disabledClickText } shown={ this.state.disabledText } />
-            <FancyMessage class='error-message' message={ errors } shown='default' />
+            { unit ? this.renderUnitComponent() : null }
+            
+            { focusText ?
+            <FancyMessage classes='focus-text' 
+                          message={ focusText } 
+                          shown={ isFocused } /> : null }
 
+            { disabledClickText ?
+            <FancyMessage classes='disabled-text' 
+                          message={ disabledClickText } 
+                          shown={ showingDisabledText } /> : null }
+
+            <FancyMessage classes='error-message' 
+                          message={ errors } 
+                          shown={ errors } />
         </div>
       </div>
-    );
+    )
   }
-})
 
+  showLabel() {
+    this.setState({ isFocused: true });
+  }
 
-var FancyMessage = React.createClass({
-  render: function () {
-    var messages = this.props.message;
+  hideLabel() {
+    this.setState({ isFocused: false });
+  }
 
-    if (typeof(messages) != 'string') {
-      var messages = _.values(this.props.errors);
-      messages = messages && messages[0];
+  showDisabledText() {
+    if (!this.props.disabledClickText || !this.props.disabled) return;
+    
+    this.setState({ showingDisabledText: true });
+    setTimeout(function() {
+      this.setState({ showingDisabledText: false });
+    }.bind(this), 2100);
+  }
+
+  onFancyChange(e) {
+    if (this.props.handleChange) {
+      const newState = this.getNewState(e.target.value);
+      this.props.handleChange(newState);
     }
+  }
 
-    if (!messages || !messages.length) { return null; }
+  getNewState(newVal) {
+    return {
+      value: newVal,
+      property: this.props.property
+    };
+  }
 
-    if (!messages.slice(-1).match(/\!|\.|\?/)) {
-      messages += ".";
-    }
-
-    var messageClasses = classNames('message-container', this.props.class, {'shown': this.props.shown });
-
+  renderUnitComponent() {
     return (
-      <div className={ messageClasses }>
-        <div className='carat' />
-        <div className="message">{ messages }</div>
-      </div>
-    );
+      <p className={ cns('unit', {'shown': this.props.value || this.state.isFocused }) }>
+        { this.props.unit }
+      </p>
+    )
   }
-})
+}
+
+FancyField.propTypes = {
+  property: PropTypes.string,
+  updateChange: PropTypes.func,
+  value: PropTypes.any,
+  label: PropTypes.string,
+
+  unit: PropTypes.string,
+  placeholder: PropTypes.string,
+  type: PropTypes.string,
+  initFocus: PropTypes.bool,
+  persistLabel: PropTypes.bool,
+  errors: PropTypes.any,
+  disabledClickText: PropTypes.string,
+  focusText: PropTypes.string
+}
+
+FancyField.defaultProps = {
+  property: 'fancy'
+}
 
 
-module.exports = FancyField;
+const FancyMessage = ({ message, classes, shown }) => {
+
+  if (!message || (!message.length && !_.isEmpty(message))) return <noscript />;
+
+  const messageClasses = cns('message-container', classes, {
+                            'shown': shown });
+  
+  let messageToShow = typeof(message) != 'string' ?
+                          _.values(message).join(' ') : message;
+
+  if (!messageToShow.slice(-1).match(/\!|\.|\?/)) {
+    messageToShow += ".";
+  }
+
+  return (
+    <div className={ messageClasses }>
+      <div className='carat' />
+      <div className="message">{ messageToShow }</div>
+    </div>
+  )
+}
+
+export default FancyField;

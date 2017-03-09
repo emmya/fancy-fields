@@ -1,51 +1,82 @@
-var React = require('react');
-var classNames = require('classNames');
+import _ from 'underscore';
+import React, { Component, PropTypes } from 'react';
+import cns from 'classnames';
 
-var FancyButton = React.createClass({ 
-	getChange: function(bool) {
-		return {
-			value: bool,
-			hasChanged: bool != this.props.initialValue,
-			property: this.props.property
-		}
-	},
+class FancyButton extends Component {
+  constructor(props) {
+    super(props);
 
-  updateChange: function(e) {
-   	var newState = this.getChange(e.currentTarget.checked);
-   	this.props.updateChange(newState);
-  },
+    this.onFancyChange = this.onFancyChange.bind(this)
+    this.renderSwitch = this.renderSwitch.bind(this)
+  }
 
-  render: function() {
-    var toggleDiv = (<div className='toggle'>
-                      <span className='toggle-background'></span>
-                      <span className='toggle-toggler'></span>
-                    </div>);
+  render() {
+    const { checkbox, property, disabled, value, label } = this.props;
 
-    var switchDiv = (<div className='switch'>
-                      <div className='switch-option true'>{ this.props.trueLabel }</div>{/*
-                      */}<div className='switch-option false'>{ this.props.falseLabel }</div>
-                    </div>);
+    const id = checkbox ? 'checkbox' :
+               this.props.switch ? 'switch' : 'toggle';
 
-    var toggler = this.props.checkbox ? null : 
-                  this.props.switch ? switchDiv : toggleDiv;
-    var id = this.props.checkbox ? 'checkbox' :
-                  this.props.switch ? 'switch' : 'toggle';
-
-    var classes = classNames('fancy-button', this.props.property, {'disabled': this.props.disabled});
+    const classes = cns('fancy-button', property, {
+                        'disabled': disabled });
 
 	 	return (
-	 		<label id={id} className={ classes } >
-        <p>{ this.props.label }</p>
+	 		<label id={ id } className={ classes } >
+
+        <p>{ label }</p>
+
         <input type='checkbox' 
           ref='checkbox'
-        	checked={ this.props.value } 
-        	value={ this.props.value } 
-        	onChange={ this.updateChange } 
-        	disabled={ this.props.disabled }/>
-        { toggler }
+        	checked={ value } 
+        	value={ value } 
+        	onChange={ this.onFancyChange } 
+        	disabled={ disabled }/>
+
+        { checkbox ? null : 
+          this.props.switch ? this.renderSwitch() : this.renderToggle() }
       </label>
   	)
   }
-});
 
-module.exports = FancyButton;
+  onFancyChange(e) {
+    if (this.props.handleChange) {
+      this.props.handleChange({
+        value: e.currentTarget.checked,
+        property: this.props.property });
+    }
+  }
+
+  renderToggle() {
+    return (
+      <div className='toggle'>
+        <span className='toggle-background'></span>
+        <span className='toggle-toggler'></span>
+      </div>
+    )
+  }
+
+  renderSwitch() {
+    return (
+      <div className='switch'>
+        <div className='switch-option true'>{ this.props.labelOne }</div>{/*
+      */}<div className='switch-option false'>{ this.props.labelTwo }</div>
+      </div>
+    )
+  }
+}
+
+FancyButton.propTypes = {
+  property: PropTypes.string,
+  updateChange: PropTypes.func,
+  value: PropTypes.bool,
+
+  label: PropTypes.string,
+
+  switch: PropTypes.bool,
+  labelOne: PropTypes.string,
+  labelTwo: PropTypes.string,
+
+  checkbox: PropTypes.bool,
+  disabled: PropTypes.bool
+}
+
+export default FancyButton;
